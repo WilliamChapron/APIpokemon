@@ -59,9 +59,8 @@ app.post('/pokemon/update', jsonParser, (req, res) => {
 app.delete('/pokemon/delete', jsonParser, (req, res) => {
     const body = req.body;
     const dbConnect = dbo.getDb();
-    filter = {name: body.pokemondelete}
+    filter = {_id:ObjectId(body.pokemondelete)}
     dbConnect.collection('pokemon').deleteMany(filter);
-    res.json(body);
 });
 
 
@@ -84,17 +83,23 @@ app.post('/pokedex/insert', jsonParser, (req, res) => {
     let body = req.body;
     const dbConnect = dbo.getDb();
     dbConnect.collection("pokemon").findOne({_id:ObjectId(body.choice)}).then(function(pokemon,err){
-        dbConnect.collection("pokedex").insertOne({_id:pokemon._id,name:pokemon.name,type:pokemon.type});
-    });
+        dbConnect.collection("pokedex").findOne({_id:ObjectId(body.choice)}).then(function(pokemonPokedex,err){
+            if (pokemonPokedex){
+                res.json(pokemon);
+            } else{
+                dbConnect.collection("pokedex").insertOne({_id:pokemon._id,name:pokemon.name,type:pokemon.type});
+                res.json(pokemon);
+            }
+        })
+    })
 });
 
 
 app.delete('/pokedex/delete', jsonParser, (req, res) => {
     const body = req.body;
     const dbConnect = dbo.getDb();
-    filter = {name:body.pokedexdelete}
+    filter = {_id:ObjectId(body.pokedexdelete)}
     dbConnect.collection('pokedex').deleteMany(filter);
-    res.json(body);
 });
 
 
