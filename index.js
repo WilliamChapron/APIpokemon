@@ -51,6 +51,7 @@ app.post('/pokemon/update', jsonParser, (req, res) => {
     filter = {name: body.pokemonupdate}
     set = {$set:{name:body.name,type:[{name:body.type1},{name:body.type2}]}}
     dbConnect.collection("pokemon").updateMany(filter,set);
+    dbConnect.collection("pokedex").updateMany(filter,set);
     res.json(body);
 });
 
@@ -61,6 +62,7 @@ app.delete('/pokemon/delete', jsonParser, (req, res) => {
     const dbConnect = dbo.getDb();
     filter = {_id:ObjectId(body.pokemondelete)}
     dbConnect.collection('pokemon').deleteMany(filter);
+    dbConnect.collection('pokedex').deleteMany(filter);
 });
 
 
