@@ -1,6 +1,3 @@
-
-
-
 // INIT LINK & MODULE
 
 const express = require("express");
@@ -38,22 +35,28 @@ app.post('/pokemon/insert', jsonParser, (req, res) => {
         const type1 = returntype1;
         dbConnect.collection("type").findOne({_id:ObjectId(body.choice2)}).then(function(returntype2,err){
             const type2 = returntype2;
-            dbConnect.collection("pokemon").insertOne({name:body.name,type:[{_id:type1._id,name:type1.name},{_id:type2._id,name:type2.name}]});
+            dbConnect.collection("pokemon").insertOne({name:body.name,img:body.img,type:[{_id:type1._id,name:type1.name,img:type1.img},{_id:type2._id,name:type2.name,img:type2.img}]});
         });
     });
-    
+
 });
-
-
 app.post('/pokemon/update', jsonParser, (req, res) => {
     const body = req.body;
-    const dbConnect = dbo.getDb();                                 
-    filter = {name: body.pokemonupdate}
-    set = {$set:{name:body.name,type:[{name:body.type1},{name:body.type2}]}}
-    dbConnect.collection("pokemon").updateMany(filter,set);
-    dbConnect.collection("pokedex").updateMany(filter,set);
-    res.json(body);
+    const dbConnect = dbo.getDb();
+    filter = {_id: ObjectId(body.pokemonupdate)}
+    dbConnect.collection("type").findOne({_id:ObjectId(body.choice)}).then(function(returntype1,err){
+        const type1 = returntype1;
+        dbConnect.collection("type").findOne({_id:ObjectId(body.choice2)}).then(function(returntype2,err){
+            const type2 = returntype2;
+            set = {$set:{name:body.name,img:body.img,type:[type1,type2]}} 
+            dbConnect.collection("pokemon").updateMany(filter,set);
+            dbConnect.collection("pokedex").updateMany(filter,set);
+            res.json(body);
+        })
+    })
+
 });
+
 
 
 
@@ -122,16 +125,13 @@ app.get("/type/read", function (req, res) {
 app.post('/type/insert', jsonParser, (req, res) => {
     const body = req.body;
     const dbConnect = dbo.getDb();
-    dbConnect.collection("type").insertOne({name:body.name});
-    res.json(body);
+    dbConnect.collection("type").insertOne({name:body.name,img:body.img});
 });
-
-
 
 app.post('/type/update', jsonParser, (req, res) => {
     const body = req.body;
     const dbConnect = dbo.getDb(); 
-    filter = {name: body.typeupdate};
+    filter = {_id: ObjectId(body.typeupdate)}; 
     set = {$set:{name:body.name}}
     dbConnect.collection("type").updateMany(filter,set);
     res.json(body)
@@ -147,6 +147,8 @@ app.delete('/type/delete', jsonParser, (req, res) => {
     dbConnect.collection('type').deleteMany(filter);
     res.json(body);
 });
+
+
 
 
 // LISTEN
