@@ -35,7 +35,7 @@ app.post('/pokemon/insert', jsonParser, (req, res) => {
         const type1 = returntype1;
         dbConnect.collection("type").findOne({_id:ObjectId(body.choice2)}).then(function(returntype2,err){
             const type2 = returntype2;
-            dbConnect.collection("pokemon").insertOne({name:body.name,img:body.img,type:[{_id:type1._id,name:type1.name,img:type1.img},{_id:type2._id,name:type2.name,img:type2.img}]});
+            dbConnect.collection("pokemon").insertOne({name:body.name,img:body.img,type:[{_id:type1._id,name:type1.name,img:type1.img},{_id:type2._id,name:type2.name,img:type2.img}],desctype1:body.desctype1,desctype2:body.desctype2});
         });
     });
 
@@ -48,7 +48,7 @@ app.post('/pokemon/update', jsonParser, (req, res) => {
         const type1 = returntype1;
         dbConnect.collection("type").findOne({_id:ObjectId(body.choice2)}).then(function(returntype2,err){
             const type2 = returntype2;
-            set = {$set:{name:body.name,img:body.img,type:[type1,type2]}} 
+            set = {$set:{name:body.name,img:body.img,type:[type1,type2],desctype1:body.desctype1,desctype2:body.desctype2}} 
             dbConnect.collection("pokemon").updateMany(filter,set);
             dbConnect.collection("pokedex").updateMany(filter,set);
             res.json(body);
