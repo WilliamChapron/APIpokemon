@@ -92,7 +92,7 @@ app.post('/pokedex/insert', jsonParser, (req, res) => {
             if (pokemonPokedex){
                 res.json(pokemon);
             } else{
-                dbConnect.collection("pokedex").insertOne({_id:pokemon._id,name:pokemon.name,type:pokemon.type});
+                dbConnect.collection("pokedex").insertOne({_id:pokemon._id,name:pokemon.name,img:pokemon.img,type:pokemon.type});
                 res.json(pokemon);
             }
         })
